@@ -18,6 +18,21 @@ for url in "${url_arr[@]}"; do
 	echo "after: $result"
 done
 
+# url in cmake
+cmake_urls=(
+       "GIT_REPOSITORY https://github.com/google/googletest"
+       "GIT_REPOSITORY   https://github.com/google/benchmark"
+       "GIT_REPOSITORY            https://github.com/abseil/abseil-cpp"
+)
+for url in "${cmake_urls[@]}"; do
+	result=$(replace_url2 "$url")
+	echo "before: $url"
+	echo "after: $result"
+done
+
+
+
+
 echo "========================================"
 cp backup/* .
 
@@ -39,5 +54,25 @@ for file in "${gitmodule_files[@]}";do
 	echo "after:--------------"
 	cat "$file"
 done
+# cmake file test
+cmake_files=(
+	"CMakeLists1"
+	"CMakeLists2"
+	"CMakeLists3"
+)
+
+for file in "${cmake_files[@]}";do
+	echo "current file $file"
+	echo "before:--------------"
+	grep "GIT_REPOSITORY" "$file"
+
+	replace_url_in_file2 "$file"
+	if [ $? -ne 0 ]; then
+		echo "failed in $file"
+	fi
+	echo "after:--------------"
+	grep "GIT_REPOSITORY" "$file"
+done
 
 rm gitmodule*
+rm CMakeLists*

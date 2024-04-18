@@ -25,6 +25,23 @@ replace_url_in_file()
 	sed -i "s_\(${prefix}\)https://github.com/\(.*\)\(${suffix}\)\?_\1git@github.com:\2\3_g" "$file"
 }
 
+# GIT_REPOSITORY in cmake
+replace_url2()
+{
+	local url=$1
+	local prefix="GIT_REPOSITORY[[:space:]]*"
+	local new_url=$(echo "$url" | sed "s#\(${prefix}\)https://github.com/\(.*\)\(${suffix}\)\?#\1git@github.com:\2\3#g")
+	echo "$new_url"
+}
+# relace http urls with ssh urls in a CMakeLists.txt file
+replace_url_in_file2()
+{
+	local file=$1
+	local prefix="GIT_REPOSITORY[[:space:]]*"
+	sed -i "s#\(${prefix}\)https://github.com/\(.*\)\(${suffix}\)\?#\1git@github.com:\2\3#g" "$file"
+}
+
+
 # replace http url with ssh url in all '.gitmodules' files found in current directory
 do_replace_url()
 {
@@ -35,10 +52,16 @@ do_replace_url()
 		cd $(dirname "$file") && git submodule sync && cd -
 		#cat "$file"
 	done
+	
+	for file in `find . -name CMakeLists.txt -type f`; do
+		echo "$file"
+		replace_url_in_file2 "$file"
+	done
+
 }
 
 # restore the original http url by git restore
-resotre_gitmodules()
+restore_gitmodules()
 {
 	for file in `find . -name .gitmodules -type f`; do
 		echo "$file"
