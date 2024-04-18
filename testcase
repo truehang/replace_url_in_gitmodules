@@ -1,0 +1,43 @@
+#!/bin/bash
+source replace_url
+url_arr=(
+"url = https://github.com/davidhalter/typeshed"
+"url= https://github.com/davidhalter/typesfsfshed"
+"url=https://github.com/davidhdsfsdfalter/typesfsfshed"
+"url=https://github.com/davidhd/type.git"
+"   url  =    https://github.com/davidhd/type"
+"url = https://github.com/davidhalter/typeshed.git"
+# 这个应该不会被替换，没有以url开头
+"https://github.com/davidhd/type.git"
+"https://github.com/davidhd/type"
+)
+
+for url in "${url_arr[@]}"; do
+	result=$(replace_url "$url")
+	echo "before: $url"
+	echo "after: $result"
+done
+
+echo "========================================"
+cp backup/* .
+
+gitmodule_files=(
+	"gitmodule1"
+	"gitmodule2"
+	"gitmodule3"
+)
+
+for file in "${gitmodule_files[@]}";do
+	echo "current file $file"
+	echo "before:--------------"
+	cat "$file"
+
+	replace_url_in_file "$file"
+	if [ $? -ne 0 ]; then
+		echo "failed in $file"
+	fi
+	echo "after:--------------"
+	cat "$file"
+done
+
+rm gitmodule*

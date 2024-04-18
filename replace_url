@@ -1,0 +1,48 @@
+#!/bin/bash
+#set -xe
+# global variable
+prefix="url[[:space:]]*=[[:space:]]*"
+#prefix="url *= *"
+suffix=".git"
+
+# replace a http url string with ssh url string
+# input: "url = https://github.com/xxx/yyy" or "url = https://github.com/xxx/yyy.git"
+# output: "url = git@github.com:xxx/yyy" or "url = git@github.com:xxx/yyy.git"
+replace_url()
+{
+# 原始 URL
+local url=$1
+
+# 使用 sed 替换 URL 中的部分
+local new_url=$(echo "$url" | sed "s_\(${prefix}\)https://github.com/\(.*\)\(${suffix}\)\?_\1git@github.com:\2\3_g")
+echo "$new_url"
+}
+
+# relace http urls with ssh urls in a .gitmodlues file
+replace_url_in_file()
+{
+	local file=$1
+	sed -i "s_\(${prefix}\)https://github.com/\(.*\)\(${suffix}\)\?_\1git@github.com:\2\3_g" "$file"
+}
+
+# replace http url with ssh url in all '.gitmodules' files found in current directory
+do_replace_url()
+{
+	for file in `find . -name .gitmodules -type f`; do
+		echo "$file"
+		replace_url_in_file "$file"
+		# 更新本地的 submodule 配置，使其与 .gitmodules 文件中的修改保持一致
+		cd $(dirname "$file") && git submodule sync && cd -
+		#cat "$file"
+	done
+}
+
+# restore the original http url by git restore
+resotre_gitmodules()
+{
+	for file in `find . -name .gitmodules -type f`; do
+		echo "$file"
+		cd $(dirname "$file") && git restore ".gitmodules" && cd -
+	done
+}
+
