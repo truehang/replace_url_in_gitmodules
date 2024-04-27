@@ -12,9 +12,15 @@
 
 ## 如何使用
 
-把replace_url脚本拷贝到你的项目的主路径（和.gitmodules同一目录）下，然后使用replace_url脚本中的do_replace_url函数完成url的替换，你可能要多次执行do_replace_url（因为如果是嵌套的包含子项目，每个子项目下载下来之后都要进行替换，那样才能进一步下载到下一层的子项目），具体来说是这样的：
+下载replace_url脚本到你的项目的主路径（和.gitmodules同一目录）下（如果下载失败，请参考[该文档](dns_error.md)解决），然后使用replace_url脚本中的do_replace_url函数完成url的替换，你可能要多次执行do_replace_url（因为如果是嵌套的包含子项目，每个子项目下载下来之后都要进行替换，那样才能进一步下载到下一层的子项目），具体来说是这样的：
 
 ```bash
+# 下载脚本
+curl -O https://raw.githubusercontent.com/truehang/replace_url_in_gitmodules/main/replace_url
+# 如果下载脚本失败
+# 可能的问题就是raw.githubusercontent.com被本地的dns服务器解释成了0.0.0.0
+# 方法是把dns服务器改为8.8.8.8即可
+# 请参考解决
 # source 脚本
 source replace_url
 # 之后我们可以使用do_replace_url函数了
