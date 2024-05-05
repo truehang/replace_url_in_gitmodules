@@ -21,11 +21,11 @@ Address: ::
 我们直接编辑`/etc/resolv.conf `文件修改dns服务器即可：
 
 ```bash
-# 用你喜欢的编辑器打开
-$ sudo vim  /etc/resolv.conf
-# 把 nameserver修改成8.8.8.8
-nameserver 8.8.8.8
-# 保存并退出
+# /etc/resolv.conf通常是一个软链接文件(ll /etc/resolv.conf可以查看)
+# 我们解除链接，如果不解除下一次重启之后该文件又被修改了。
+$ sudo unlink /etc/resolv.conf
+# 设置域名解析地址为 8.8.8.8
+$ echo "nameserver 8.8.8.8" | sudo tee /etc/resolv.conf
 # 再次使用nslookup 进行查找
 $ nslookup raw.githubusercontent.com
 Server:        8.8.8.8
